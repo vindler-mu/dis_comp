@@ -71,7 +71,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#f0f2f
 .tab-btn.active{color:#4f46e5;background:rgba(79,70,229,0.04)}
 .tab-btn.active::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px;background:#4f46e5;border-radius:2px 2px 0 0}
 .tab-btn .tab-icon{margin-right:6px}
-.tab-btn.editor-only{display:none}
+.tab-btn.editor-only.hidden{display:none}
 .tab-panel{display:none;animation:fadeIn 0.25s ease}
 .tab-panel.active{display:block}
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
@@ -333,7 +333,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#f0f2f
   <button class="tab-btn" data-tab="path"><span class="tab-icon">&#x1F9F5;</span>Projektova cesta</button>
   <button class="tab-btn" data-tab="competencies"><span class="tab-icon">&#x1F3AF;</span>Kompetence</button>
   <button class="tab-btn" data-tab="matrix"><span class="tab-icon">&#x1F4CA;</span>Matice</button>
-  <button class="tab-btn editor-only" data-tab="editor"><span class="tab-icon">&#x270F;</span>Editor</button>
+  <button class="tab-btn editor-only hidden" data-tab="editor"><span class="tab-icon">&#x270F;</span>Editor</button>
   <button class="tab-btn" data-tab="export"><span class="tab-icon">&#x1F4E6;</span>Export</button>
 </div>
 
@@ -389,8 +389,8 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#f0f2f
 // ====================================================================
 //  CONFIG — set these for your GitHub repo
 // ====================================================================
-const GITHUB_OWNER = 'vindler-mu';   // e.g. 'vojve'
-const GITHUB_REPO  = 'dis_comp';   // e.g. 'kompetence'
+const GITHUB_OWNER = '';   // e.g. 'vojve'
+const GITHUB_REPO  = '';   // e.g. 'kompetence'
 const DATA_PATH    = 'data.json';
 const BRANCH       = 'main';
 
@@ -474,7 +474,7 @@ function doLogout() {
   localStorage.removeItem('roadmap_token');
   document.getElementById('auth-btn').classList.remove('logged-in');
   document.getElementById('auth-label').textContent = 'Prihlasit se';
-  document.querySelectorAll('.editor-only').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.editor-only').forEach(el => el.classList.add('hidden'));
   document.getElementById('save-bar').classList.remove('show');
   // Switch away from editor tab if active
   const activeTab = document.querySelector('.tab-btn.active');
@@ -487,7 +487,7 @@ function activateEditor() {
   isEditor = true;
   document.getElementById('auth-btn').classList.add('logged-in');
   document.getElementById('auth-label').textContent = 'Odhlasit se';
-  document.querySelectorAll('.editor-only').forEach(el => el.style.display = '');
+  document.querySelectorAll('.editor-only').forEach(el => el.classList.remove('hidden'));
 }
 
 // Auto-login from localStorage
