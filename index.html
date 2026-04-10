@@ -291,6 +291,50 @@ tr.collapsed{display:none}
 #tooltip .t-note{color:#6b7280;font-size:10.5px;border-top:1px solid #2d3748;padding-top:6px;margin-top:6px}
 #tooltip .t-click{color:#a78bfa;font-size:10px;margin-top:6px;font-style:italic}
 
+/* ── CAREER PATHS ── */
+.career-wrap{padding:24px 32px 48px}
+.career-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;margin-top:16px}
+.career-card{background:#fff;border-radius:12px;padding:22px;box-shadow:0 1px 4px rgba(0,0,0,0.06);border:1px solid #e1e4e8;border-top:4px solid;cursor:pointer;transition:all 0.2s}
+.career-card:hover{box-shadow:0 6px 20px rgba(0,0,0,0.1);transform:translateY(-2px)}
+.career-card.active{box-shadow:0 0 0 2.5px var(--career-color),0 4px 16px rgba(0,0,0,0.1)}
+.career-icon{font-size:28px;margin-bottom:8px}
+.career-title{font-size:16px;font-weight:700;color:#1a1a2e;margin-bottom:4px}
+.career-desc{font-size:12px;color:#6b7280;line-height:1.6;margin-bottom:10px}
+.career-sectors{font-size:10.5px;color:#8892a4;font-weight:600;margin-bottom:12px}
+.career-section{margin-top:10px}
+.career-section-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#8892a4;margin-bottom:6px}
+.career-comps{display:flex;flex-wrap:wrap;gap:4px}
+.career-comp{display:flex;align-items:center;gap:4px;padding:3px 8px;border-radius:12px;font-size:10.5px;font-weight:600;background:#f3f4f6;color:#374151}
+.career-comp-dot{width:7px;height:7px;border-radius:50%}
+.career-courses{display:flex;flex-direction:column;gap:3px}
+.career-course{display:flex;align-items:center;justify-content:space-between;padding:5px 8px;border-radius:6px;background:#f6f8fa;font-size:11px;cursor:pointer;transition:background 0.1s}
+.career-course:hover{background:#e0e7ff}
+.career-course-name{font-weight:600;color:#374151}
+.career-course-sem{font-size:10px;color:#8892a4}
+.career-detail{margin-top:16px;padding:20px;background:#fff;border-radius:12px;border:1px solid #e1e4e8;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.career-detail h2{font-size:18px;font-weight:700;margin-bottom:4px}
+.career-detail-desc{font-size:13px;color:#6b7280;line-height:1.6;margin-bottom:16px}
+
+/* ── ACCREDITATION EXPORT ── */
+.accred-wrap{padding:24px 32px 48px}
+.accred-table{border-collapse:collapse;width:100%;font-size:11px;background:#fff}
+.accred-table th,.accred-table td{padding:6px 8px;border:1px solid #d1d5db;text-align:center;vertical-align:middle}
+.accred-table thead th{background:#1a1a2e;color:#fff;font-size:10px;font-weight:700;letter-spacing:0.3px;position:sticky;top:0;z-index:2}
+.accred-table tbody td:first-child{text-align:left;font-weight:600;background:#f6f8fa;white-space:nowrap}
+.accred-table tbody tr:nth-child(even){background:#f9fafb}
+.accred-check{color:#22c55e;font-weight:700;font-size:14px}
+
+/* ── VALIDATION ── */
+.valid-wrap{padding:16px 18px}
+.valid-item{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid #f0f0f0;font-size:12px}
+.valid-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+.valid-error .valid-icon{color:#dc2626}
+.valid-warn .valid-icon{color:#f59e0b}
+.valid-ok .valid-icon{color:#22c55e}
+.valid-msg{color:#374151;line-height:1.5}
+.valid-msg code{background:#f3f4f6;padding:1px 5px;border-radius:3px;font-size:11px}
+.valid-summary{display:flex;gap:16px;padding:12px 0;margin-bottom:8px;border-bottom:2px solid #e1e4e8;font-size:12px;font-weight:600}
+
 /* ── LOADING ── */
 .loading{display:flex;align-items:center;justify-content:center;padding:80px;font-size:14px;color:#8892a4}
 .loading::before{content:'';width:20px;height:20px;border:2px solid #e1e4e8;border-top-color:#6366f1;border-radius:50%;animation:spin 0.6s linear infinite;margin-right:10px}
@@ -303,7 +347,7 @@ tr.collapsed{display:none}
 
 <div class="page-header">
   <div>
-    <h1>Studijni roadmap — Service Design</h1>
+    <h1>Dashboard studia - Design informacnich sluzeb</h1>
     <p>Faze designoveho procesu · Navaznosti predmetu · Kompetence absolventa</p>
   </div>
   <div class="header-right">
@@ -334,6 +378,7 @@ tr.collapsed{display:none}
   <button class="tab-btn" data-tab="path"><span class="tab-icon">&#x1F9F5;</span>Projektova cesta</button>
   <button class="tab-btn" data-tab="competencies"><span class="tab-icon">&#x1F3AF;</span>Kompetence</button>
   <button class="tab-btn" data-tab="matrix"><span class="tab-icon">&#x1F4CA;</span>Matice</button>
+  <button class="tab-btn" data-tab="careers"><span class="tab-icon">&#x1F4BC;</span>Kariery</button>
   <div style="flex:1"></div>
   <button class="tab-btn editor-only hidden" data-tab="editor"><span class="tab-icon">&#x270F;</span>Editor</button>
   <button class="tab-btn" data-tab="export"><span class="tab-icon">&#x1F4E6;</span>Export</button>
@@ -356,10 +401,13 @@ tr.collapsed{display:none}
 </div>
 <div class="tab-panel" id="panel-competencies"><div class="comp-detail-wrap" id="comp-detail-wrap"></div></div>
 <div class="tab-panel" id="panel-matrix"><div class="matrix-wrap" id="matrix-wrap"></div></div>
+<div class="tab-panel" id="panel-careers"><div class="career-wrap" id="career-wrap"></div></div>
 <div class="tab-panel" id="panel-editor"><div class="editor-wrap" id="editor-wrap"></div></div>
 <div class="tab-panel" id="panel-export">
   <div class="export-wrap"><h2>Export</h2><p>Stahni data pro dalsi zpracovani.</p>
     <div class="export-option"><div><h3>JSON data</h3><p>Kompletni data vizualizace.</p></div><button class="ed-btn ed-btn-secondary" onclick="exportJSON()">Stahnout JSON</button></div>
+    <div class="export-option"><div><h3>Akreditacni tabulka</h3><p>Matice predmetu x kompetenci pro akreditacni dokumenty (HTML pro tisk).</p></div><button class="ed-btn ed-btn-primary" onclick="exportAccred()">Zobrazit / tisknout</button></div>
+    <div class="export-option"><div><h3>Akreditacni tabulka (CSV)</h3><p>CSV soubor pro import do Excelu.</p></div><button class="ed-btn ed-btn-secondary" onclick="exportAccredCSV()">Stahnout CSV</button></div>
   </div>
 </div>
 
@@ -612,6 +660,7 @@ function switchTab(tabName) {
   if(tabName==='overview')renderOverview();
   if(tabName==='courses')renderCourseList();
   if(tabName==='competencies')renderCompDetail();
+  if(tabName==='careers')renderCareers();
 }
 
 document.querySelectorAll('.tab-btn').forEach(btn=>{
@@ -726,6 +775,9 @@ function renderMatrix(){if(!DATA)return;const w=document.getElementById('matrix-
 // ====================================================================
 function renderEditor(){if(!DATA||!isEditor)return;const wrap=document.getElementById('editor-wrap');let h='';
 
+// Validace
+h+=`<div class="editor-section"><div class="editor-section-header" onclick="this.nextElementSibling.classList.toggle('collapsed')"><h3>Validace dat</h3><span style="color:#8892a4;font-size:11px">klikni</span></div><div class="editor-section-body">${renderValidation()}</div></div>`;
+
 // Predmety — kompaktni tabulka
 h+=`<div class="editor-section"><div class="editor-section-header" onclick="this.nextElementSibling.classList.toggle('collapsed')"><h3>Predmety (${DATA.courses.length})</h3><span style="color:#8892a4;font-size:11px">klikni</span></div><div class="editor-section-body">`;
 h+=`<table class="ed-table"><thead><tr><th style="width:30px"></th><th style="width:200px">Nazev</th><th style="width:55px">Sem.</th><th style="width:110px">Kategorie</th><th style="width:45px">Nar.</th><th>Kompetence</th><th style="width:140px">Poznamka</th><th style="width:50px"></th></tr></thead><tbody>`;
@@ -779,10 +831,194 @@ function importJSON(){try{const nd=JSON.parse(document.getElementById('ed-json')
 function applyChanges(){activeComp=null;renderTimeline();renderCompChips();renderGrid('main-grid','grid-wrapper',true);renderPath();renderEditor()}
 
 // ====================================================================
+//  CAREERS
+// ====================================================================
+let activeCareer=null;
+
+function renderCareers(){
+  if(!DATA)return;
+  const wrap=document.getElementById('career-wrap');
+  const paths=DATA.careerPaths||[];
+  let h='<div class="ov-section-title">Karierni cesty absolventa</div>';
+  h+='<p style="font-size:13px;color:#6b7280;margin:-8px 0 16px;line-height:1.6">Klikni na roli a podivej se, ktere predmety a kompetence k ni vedou.</p>';
+  h+='<div class="career-grid">';
+  paths.forEach(p=>{
+    h+=`<div class="career-card${activeCareer===p.id?' active':''}" style="border-top-color:${p.color};--career-color:${p.color}" onclick="selectCareer('${p.id}')">
+      <div class="career-icon">${p.icon}</div>
+      <div class="career-title">${p.title}</div>
+      <div class="career-desc">${p.description}</div>
+      <div class="career-sectors">${p.sectors}</div>
+      <div class="career-section"><div class="career-section-label">Klicove kompetence</div><div class="career-comps">${(p.keyComps||[]).map(kid=>{const k=kById(kid);return k?`<div class="career-comp"><div class="career-comp-dot" style="background:${k.color}"></div>${k.id}</div>`:''}).join('')}</div></div>
+    </div>`;
+  });
+  h+='</div>';
+
+  // Detail selected career
+  if(activeCareer){
+    const p=paths.find(x=>x.id===activeCareer);
+    if(p){
+      h+=`<div class="career-detail" style="border-top:4px solid ${p.color}">
+        <h2>${p.icon} ${p.title}</h2>
+        <div class="career-detail-desc">${p.description}<br><strong style="color:#8892a4;font-size:11px">Sektory:</strong> ${p.sectors}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+          <div><div class="career-section-label">Klicove kompetence</div><div style="display:flex;flex-direction:column;gap:4px">${(p.keyComps||[]).map(kid=>{const k=kById(kid);return k?`<div class="career-comp" style="padding:5px 10px"><div class="career-comp-dot" style="background:${k.color}"></div>${k.id}: ${k.label}</div>`:''}).join('')}</div></div>
+          <div><div class="career-section-label">Doporucene predmety</div><div class="career-courses">${(p.keyCourses||[]).map(cid=>{const c=courseById(cid);if(!c)return'';const sem=DATA.semesters[c.sem-1];return`<div class="career-course" onclick="openDetail('${c.id}')"><span class="career-course-name">${c.name}</span><span class="career-course-sem" style="color:${sem.color}">${sem.label}</span></div>`}).join('')}</div></div>
+        </div>
+      </div>`;
+    }
+  }
+  wrap.innerHTML=h;
+}
+
+function selectCareer(id){
+  activeCareer=activeCareer===id?null:id;
+  renderCareers();
+  // Highlight in roadmap
+  if(activeCareer&&DATA.careerPaths){
+    const p=DATA.careerPaths.find(x=>x.id===activeCareer);
+    if(p){
+      const cids=new Set(p.keyCourses||[]);
+      document.querySelectorAll('#main-grid .card').forEach(card=>{
+        if(cids.has(card.dataset.id)){card.classList.remove('dimmed');card.style.boxShadow=`0 0 0 2.5px ${p.color},0 2px 8px rgba(0,0,0,0.1)`}
+        else{card.classList.add('dimmed');card.style.boxShadow=''}
+      });
+    }
+  }
+}
+
+// ====================================================================
+//  VALIDATION
+// ====================================================================
+function runValidation(){
+  if(!DATA)return[];
+  const issues=[];
+  const courseIds=new Set(DATA.courses.map(c=>c.id));
+  const compIds=new Set(DATA.competencies.map(k=>k.id));
+
+  DATA.courses.forEach(c=>{
+    // Check leadsTo references
+    (c.leadsTo||[]).forEach(tid=>{
+      if(!courseIds.has(tid))issues.push({type:'error',msg:`Predmet <code>${c.name}</code> odkazuje na neexistujici navaznost <code>${tid}</code>`});
+    });
+    // Check comp references
+    c.comps.forEach(kid=>{
+      if(!compIds.has(kid))issues.push({type:'error',msg:`Predmet <code>${c.name}</code> odkazuje na neexistujici kompetenci <code>${kid}</code>`});
+    });
+    // No comps
+    if(!c.comps.length)issues.push({type:'warn',msg:`Predmet <code>${c.name}</code> nema prirazene zadne kompetence`});
+    // No annotation
+    if(!c.annotation)issues.push({type:'warn',msg:`Predmet <code>${c.name}</code> nema anotaci`});
+    // No outcomes
+    if(!c.outcomes||!c.outcomes.length)issues.push({type:'warn',msg:`Predmet <code>${c.name}</code> nema vystupy z uceni`});
+  });
+
+  // Check for cycles
+  function hasCycle(startId,visited=new Set()){
+    if(visited.has(startId))return true;
+    visited.add(startId);
+    const c=courseById(startId);
+    if(!c)return false;
+    return(c.leadsTo||[]).some(tid=>hasCycle(tid,new Set(visited)));
+  }
+  DATA.courses.forEach(c=>{
+    if(hasCycle(c.id))issues.push({type:'error',msg:`Predmet <code>${c.name}</code> je soucasti cyklicke navaznosti`});
+  });
+
+  // Orphan courses (no incoming, no outgoing, not in pathStages)
+  const pathIds=pathCourseIds();
+  DATA.courses.forEach(c=>{
+    const hasIncoming=DATA.courses.some(x=>(x.leadsTo||[]).includes(c.id));
+    const hasOutgoing=(c.leadsTo||[]).length>0;
+    if(!hasIncoming&&!hasOutgoing&&!pathIds.has(c.id)){
+      issues.push({type:'warn',msg:`Predmet <code>${c.name}</code> nema zadne navaznosti (osirely)`});
+    }
+  });
+
+  // Competency coverage
+  DATA.competencies.forEach(k=>{
+    const count=DATA.courses.filter(c=>c.comps.includes(k.id)).length;
+    if(count<2)issues.push({type:'warn',msg:`Kompetence <code>${k.id}: ${k.label}</code> je pokryta pouze ${count} predmetem/y`});
+  });
+
+  return issues;
+}
+
+function renderValidation(){
+  const issues=runValidation();
+  const errors=issues.filter(i=>i.type==='error');
+  const warns=issues.filter(i=>i.type==='warn');
+
+  let h=`<div class="valid-summary">
+    <span style="color:${errors.length?'#dc2626':'#22c55e'}">${errors.length} chyb</span>
+    <span style="color:${warns.length?'#f59e0b':'#22c55e'}">${warns.length} upozorneni</span>
+    ${!issues.length?'<span style="color:#22c55e">Vse v poradku!</span>':''}
+  </div>`;
+
+  issues.forEach(i=>{
+    const cls=i.type==='error'?'valid-error':'valid-warn';
+    const icon=i.type==='error'?'\u274C':'\u26A0\uFE0F';
+    h+=`<div class="valid-item ${cls}"><span class="valid-icon">${icon}</span><div class="valid-msg">${i.msg}</div></div>`;
+  });
+  return h;
+}
+
+// ====================================================================
 //  EXPORT
 // ====================================================================
 function exportJSON(){download('roadmap-data.json',JSON.stringify(DATA,null,2),'application/json')}
 function download(f,c,m){const b=new Blob([c],{type:m+';charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=f;a.click();URL.revokeObjectURL(a.href)}
+
+function exportAccred(){
+  if(!DATA)return;
+  const catOrder={};DATA.categories.forEach((c,i)=>catOrder[c.id]=i);
+  const sorted=[...DATA.courses].sort((a,b)=>a.sem-b.sem||catOrder[a.cat]-catOrder[b.cat]);
+  let h=`<!DOCTYPE html><html lang="cs"><head><meta charset="UTF-8"><title>Akreditacni tabulka — Design informacnich sluzeb</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Segoe UI',sans-serif;padding:20px;font-size:11px}
+h1{font-size:16px;margin-bottom:4px}h2{font-size:12px;color:#666;margin-bottom:16px;font-weight:400}
+table{border-collapse:collapse;width:100%;page-break-inside:auto}th,td{border:1px solid #999;padding:5px 6px;text-align:center;vertical-align:middle}
+thead th{background:#1a1a2e;color:#fff;font-size:9px;font-weight:700}tbody td:first-child{text-align:left;font-weight:600;background:#f6f8fa}
+tbody td:nth-child(2),tbody td:nth-child(3){font-size:10px;color:#666}tbody tr:nth-child(even){background:#f9f9f9}
+.check{color:#22c55e;font-weight:700;font-size:13px}.comp-head{writing-mode:vertical-lr;transform:rotate(180deg);white-space:nowrap;font-size:9px}
+@media print{body{padding:10px}h1{font-size:14px}table{font-size:9px}}</style></head><body>
+<h1>Matice predmetu a kompetenci</h1><h2>Studijni program: Design informacnich sluzeb | ${new Date().toLocaleDateString('cs-CZ')}</h2>
+<table><thead><tr><th style="text-align:left;min-width:180px">Predmet</th><th>Sem.</th><th>Kategorie</th>`;
+  DATA.competencies.forEach(k=>{h+=`<th><div class="comp-head">${k.id}: ${k.label}</div></th>`});
+  h+='</tr></thead><tbody>';
+  sorted.forEach(c=>{
+    const cat=catById(c.cat);
+    h+=`<tr><td>${c.name}</td><td>${c.sem}</td><td>${cat.label.replace('\n',' ')}</td>`;
+    DATA.competencies.forEach(k=>{h+=c.comps.includes(k.id)?'<td class="check">\u2713</td>':'<td></td>'});
+    h+='</tr>';
+  });
+  // Summary row
+  h+='<tr style="background:#f0f0f0;font-weight:700"><td>CELKEM</td><td></td><td></td>';
+  DATA.competencies.forEach(k=>{
+    const cnt=DATA.courses.filter(c=>c.comps.includes(k.id)).length;
+    h+=`<td>${cnt}</td>`;
+  });
+  h+='</tr></tbody></table>';
+
+  // Competency legend
+  h+='<div style="margin-top:20px"><h3 style="font-size:12px;margin-bottom:8px">Legenda kompetenci</h3>';
+  DATA.competencies.forEach(k=>{h+=`<div style="font-size:11px;margin-bottom:3px"><strong>${k.id}:</strong> ${k.label}</div>`});
+  h+='</div></body></html>';
+
+  const w=window.open('','_blank');w.document.write(h);w.document.close();
+}
+
+function exportAccredCSV(){
+  if(!DATA)return;
+  const catOrder={};DATA.categories.forEach((c,i)=>catOrder[c.id]=i);
+  const sorted=[...DATA.courses].sort((a,b)=>a.sem-b.sem||catOrder[a.cat]-catOrder[b.cat]);
+  let csv='Predmet;Semestr;Kategorie;'+DATA.competencies.map(k=>k.id+': '+k.label).join(';')+'\n';
+  sorted.forEach(c=>{
+    const cat=catById(c.cat);
+    csv+=`"${c.name}";${c.sem};"${cat.label.replace('\n',' ')}"`;
+    DATA.competencies.forEach(k=>{csv+=';'+(c.comps.includes(k.id)?'X':'')});
+    csv+='\n';
+  });
+  download('akreditace-matice.csv','\uFEFF'+csv,'text/csv');
+}
 
 // ====================================================================
 //  INIT
