@@ -255,6 +255,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#f0f2f
 .editor-section-header h3{font-size:13px;font-weight:700;color:#1a1a2e}
 .editor-section-body{padding:14px 18px}
 .editor-section-body.collapsed{display:none}
+tr.collapsed{display:none}
 .ed-table{width:100%;border-collapse:collapse;font-size:12px}
 .ed-table th{text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#8892a4;padding:6px 8px;border-bottom:1px solid #e1e4e8}
 .ed-table td{padding:5px 8px;border-bottom:1px solid #f0f0f0;vertical-align:top}
@@ -724,41 +725,34 @@ function renderMatrix(){if(!DATA)return;const w=document.getElementById('matrix-
 // ====================================================================
 function renderEditor(){if(!DATA||!isEditor)return;const wrap=document.getElementById('editor-wrap');let h='';
 
-// Predmety
+// Predmety — kompaktni tabulka
 h+=`<div class="editor-section"><div class="editor-section-header" onclick="this.nextElementSibling.classList.toggle('collapsed')"><h3>Predmety (${DATA.courses.length})</h3><span style="color:#8892a4;font-size:11px">klikni</span></div><div class="editor-section-body">`;
+h+=`<table class="ed-table"><thead><tr><th style="width:30px"></th><th style="width:200px">Nazev</th><th style="width:55px">Sem.</th><th style="width:110px">Kategorie</th><th style="width:45px">Nar.</th><th>Kompetence</th><th style="width:140px">Poznamka</th><th style="width:50px"></th></tr></thead><tbody>`;
 
 DATA.courses.forEach((course,ci)=>{
-  const cat=catById(course.cat);
-  const sem=DATA.semesters[course.sem-1];
-  h+=`<div style="border:1px solid #e1e4e8;border-radius:8px;margin-bottom:10px;overflow:hidden">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f6f8fa;cursor:pointer;user-select:none" onclick="this.nextElementSibling.classList.toggle('collapsed')">
-      <div style="display:flex;align-items:center;gap:8px">
-        <span style="color:${cat?cat.color:'#888'};font-weight:700;font-size:11px">${sem?sem.label:''}</span>
-        <strong style="font-size:13px">${course.name}</strong>
-      </div>
-      <div style="display:flex;align-items:center;gap:6px">
-        <span style="font-size:10px;color:#8892a4">${course.comps.length} kompetenci</span>
-        <button class="ed-btn ed-btn-danger" onclick="event.stopPropagation();DATA.courses.splice(${ci},1);renderEditor();markDirty()" style="padding:2px 8px;font-size:10px">Smazat</button>
-      </div>
+  // Hlavni radek tabulky
+  h+=`<tr>
+    <td><button class="ed-btn ed-btn-secondary" onclick="document.getElementById('ed-detail-${ci}').classList.toggle('collapsed')" style="padding:2px 6px;font-size:10px" title="Rozbalit detail">&#9660;</button></td>
+    <td><input class="ed-input" value="${esc(course.name)}" onchange="DATA.courses[${ci}].name=this.value;markDirty()"></td>
+    <td><select class="ed-select" onchange="DATA.courses[${ci}].sem=+this.value;markDirty()">${[1,2,3,4,5,6].map(s=>`<option value="${s}"${course.sem===s?' selected':''}>${s}</option>`).join('')}</select></td>
+    <td><select class="ed-select" onchange="DATA.courses[${ci}].cat=this.value;markDirty()">${DATA.categories.map(c=>`<option value="${c.id}"${course.cat===c.id?' selected':''}>${c.label.replace('\n',' ')}</option>`).join('')}</select></td>
+    <td><select class="ed-select" onchange="DATA.courses[${ci}].diff=+this.value;markDirty()">${[1,2,3,4,5].map(d=>`<option value="${d}"${course.diff===d?' selected':''}>${d}</option>`).join('')}</select></td>
+    <td><div class="ed-chips-edit">${DATA.competencies.map(k=>{const on=course.comps.includes(k.id);return`<div class="ed-chip-toggle${on?' on':''}" style="${on?'background:'+k.color+';border-color:'+k.color:''}" data-ci="${ci}" data-kid="${k.id}" onclick="toggleEdComp(this)">${k.id}</div>`}).join('')}</div></td>
+    <td><input class="ed-input" value="${esc(course.note)}" onchange="DATA.courses[${ci}].note=this.value;markDirty()"></td>
+    <td><button class="ed-btn ed-btn-danger" onclick="DATA.courses.splice(${ci},1);renderEditor();markDirty()" style="padding:2px 8px;font-size:10px">X</button></td>
+  </tr>`;
+  // Rozbalovaci detail pod radkem
+  h+=`<tr id="ed-detail-${ci}" class="collapsed" style="background:#f9fafb"><td colspan="8" style="padding:0;border:none">
+    <div style="padding:14px 18px 14px 40px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div><label style="font-size:10px;font-weight:700;color:#8892a4;display:block;margin-bottom:3px">ANOTACE</label><textarea class="ed-input" rows="4" style="resize:vertical" onchange="DATA.courses[${ci}].annotation=this.value;markDirty()">${esc(course.annotation||'')}</textarea></div>
+      <div><label style="font-size:10px;font-weight:700;color:#8892a4;display:block;margin-bottom:3px">VYSTUPY Z UCENI <span style="font-weight:400;color:#b0b8c4">(kazdy na novy radek)</span></label><textarea class="ed-input" rows="4" style="resize:vertical" onchange="DATA.courses[${ci}].outcomes=this.value.split('\\n').filter(x=>x.trim());markDirty()">${esc((course.outcomes||[]).join('\n'))}</textarea></div>
+      <div><label style="font-size:10px;font-weight:700;color:#8892a4;display:block;margin-bottom:3px">KLICOVA TEMATA <span style="font-weight:400;color:#b0b8c4">(kazde na novy radek)</span></label><textarea class="ed-input" rows="4" style="resize:vertical" onchange="DATA.courses[${ci}].topics=this.value.split('\\n').filter(x=>x.trim());markDirty()">${esc((course.topics||[]).join('\n'))}</textarea></div>
+      <div><label style="font-size:10px;font-weight:700;color:#8892a4;display:block;margin-bottom:3px">NAVAZUJE NA <span style="font-weight:400;color:#b0b8c4">(ID predmetu, carkou)</span></label><input class="ed-input" value="${esc((course.leadsTo||[]).join(', '))}" onchange="DATA.courses[${ci}].leadsTo=this.value.split(',').map(x=>x.trim()).filter(x=>x);markDirty()"></div>
     </div>
-    <div class="editor-section-body collapsed" style="padding:12px 14px">
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:12px">
-        <div><label style="font-size:10px;font-weight:700;color:#8892a4;display:block;margin-bottom:3px">NAZEV</label><input class="ed-input" value="${esc(course.name)}" onchange="DATA.courses[${ci}].name=this.value;markDirty()"></div>
-        <div><label style="font-size:10px;font-weight:700;color:#8892a4;display:block;margin-bottom:3px">SEMESTR</label><select class="ed-select" style="width:100%" onchange="DATA.courses[${ci}].sem=+this.value;markDirty()">${[1,2,3,4,5,6].map(s=>`<option value="${s}"${course.sem===s?' selected':''}>${s}. semestr</option>`).join('')}</select></div>
-        <div><label style="font-size:10px;font-weight:700;color:#8892a4;display:block;margin-bottom:3px">KATEGORIE</label><select class="ed-select" style="width:100%" onchange="DATA.courses[${ci}].cat=this.value;markDirty()">${DATA.categories.map(c=>`<option value="${c.id}"${course.cat===c.id?' selected':''}>${c.label.replace('\n',' ')}</option>`).join('')}</select></div>
-        <div><label style="font-size:10px;font-weight:700;color:#8892a4;display:block;margin-bottom:3px">NAROCNOST</label><select class="ed-select" style="width:100%" onchange="DATA.courses[${ci}].diff=+this.value;markDirty()">${[1,2,3,4,5].map(d=>`<option value="${d}"${course.diff===d?' selected':''}>${d} — ${diffLabels[d]}</option>`).join('')}</select></div>
-      </div>
-      <div style="margin-bottom:12px"><label style="font-size:10px;font-weight:700;color:#8892a4;display:block;margin-bottom:3px">KOMPETENCE</label><div class="ed-chips-edit">${DATA.competencies.map(k=>{const on=course.comps.includes(k.id);return`<div class="ed-chip-toggle${on?' on':''}" style="${on?'background:'+k.color+';border-color:'+k.color:''}" data-ci="${ci}" data-kid="${k.id}" onclick="toggleEdComp(this)">${k.id}: ${k.label}</div>`}).join('')}</div></div>
-      <div style="margin-bottom:12px"><label style="font-size:10px;font-weight:700;color:#8892a4;display:block;margin-bottom:3px">KRATKA POZNAMKA</label><input class="ed-input" value="${esc(course.note)}" onchange="DATA.courses[${ci}].note=this.value;markDirty()"></div>
-      <div style="margin-bottom:12px"><label style="font-size:10px;font-weight:700;color:#8892a4;display:block;margin-bottom:3px">ANOTACE</label><textarea class="ed-input" rows="3" style="resize:vertical" onchange="DATA.courses[${ci}].annotation=this.value;markDirty()">${esc(course.annotation||'')}</textarea></div>
-      <div style="margin-bottom:12px"><label style="font-size:10px;font-weight:700;color:#8892a4;display:block;margin-bottom:3px">VYSTUPY Z UCENI <span style="font-weight:400;color:#b0b8c4">(kazdy na novy radek)</span></label><textarea class="ed-input" rows="4" style="resize:vertical" onchange="DATA.courses[${ci}].outcomes=this.value.split('\\n').filter(x=>x.trim());markDirty()">${esc((course.outcomes||[]).join('\n'))}</textarea></div>
-      <div style="margin-bottom:8px"><label style="font-size:10px;font-weight:700;color:#8892a4;display:block;margin-bottom:3px">KLICOVA TEMATA <span style="font-weight:400;color:#b0b8c4">(kazde na novy radek)</span></label><textarea class="ed-input" rows="4" style="resize:vertical" onchange="DATA.courses[${ci}].topics=this.value.split('\\n').filter(x=>x.trim());markDirty()">${esc((course.topics||[]).join('\n'))}</textarea></div>
-      <div><label style="font-size:10px;font-weight:700;color:#8892a4;display:block;margin-bottom:3px">NAVAZUJE NA (ID predmetu, carkou)</label><input class="ed-input" value="${esc((course.leadsTo||[]).join(', '))}" onchange="DATA.courses[${ci}].leadsTo=this.value.split(',').map(x=>x.trim()).filter(x=>x);markDirty()"></div>
-    </div>
-  </div>`;
+  </td></tr>`;
 });
 
-h+=`<div class="ed-actions"><button class="ed-btn ed-btn-primary" onclick="addCourse()">+ Pridat predmet</button><button class="ed-btn ed-btn-secondary" onclick="applyChanges()">Aplikovat zmeny do vizualizaci</button></div></div></div>`;
+h+=`</tbody></table><div class="ed-actions"><button class="ed-btn ed-btn-primary" onclick="addCourse()">+ Pridat predmet</button><button class="ed-btn ed-btn-secondary" onclick="applyChanges()">Aplikovat zmeny do vizualizaci</button></div></div></div>`;
 
 // Kompetence
 h+=`<div class="editor-section"><div class="editor-section-header" onclick="this.nextElementSibling.classList.toggle('collapsed')"><h3>Kompetence (${DATA.competencies.length})</h3><span style="color:#8892a4;font-size:11px">klikni</span></div><div class="editor-section-body collapsed">`;
