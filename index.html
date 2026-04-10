@@ -389,8 +389,8 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#f0f2f
 // ====================================================================
 //  CONFIG — set these for your GitHub repo
 // ====================================================================
-const GITHUB_OWNER = 'vindler-mu';   // e.g. 'vojve'
-const GITHUB_REPO  = 'dis_comp';   // e.g. 'kompetence'
+const GITHUB_OWNER = '';   // e.g. 'vojve'
+const GITHUB_REPO  = '';   // e.g. 'kompetence'
 const DATA_PATH    = 'data.json';
 const BRANCH       = 'main';
 
@@ -723,10 +723,59 @@ function renderMatrix(){if(!DATA)return;const w=document.getElementById('matrix-
 //  EDITOR (only visible when logged in)
 // ====================================================================
 function renderEditor(){if(!DATA||!isEditor)return;const wrap=document.getElementById('editor-wrap');let h='';
-h+=`<div class="editor-section"><div class="editor-section-header" onclick="this.nextElementSibling.classList.toggle('collapsed')"><h3>Predmety (${DATA.courses.length})</h3><span style="color:#8892a4;font-size:11px">klikni</span></div><div class="editor-section-body"><table class="ed-table"><thead><tr><th style="width:200px">Nazev</th><th style="width:50px">Sem.</th><th style="width:120px">Kategorie</th><th style="width:40px">Nar.</th><th>Kompetence</th><th style="width:160px">Poznamka</th><th style="width:70px"></th></tr></thead><tbody>`;
-DATA.courses.forEach((course,ci)=>{h+=`<tr><td><input class="ed-input" value="${esc(course.name)}" onchange="DATA.courses[${ci}].name=this.value;markDirty()"></td><td><select class="ed-select" onchange="DATA.courses[${ci}].sem=+this.value;markDirty()">${[1,2,3,4,5,6].map(s=>`<option value="${s}"${course.sem===s?' selected':''}>${s}</option>`).join('')}</select></td><td><select class="ed-select" onchange="DATA.courses[${ci}].cat=this.value;markDirty()">${DATA.categories.map(c=>`<option value="${c.id}"${course.cat===c.id?' selected':''}>${c.label.replace('\n',' ')}</option>`).join('')}</select></td><td><select class="ed-select" onchange="DATA.courses[${ci}].diff=+this.value;markDirty()">${[1,2,3,4,5].map(d=>`<option value="${d}"${course.diff===d?' selected':''}>${d}</option>`).join('')}</select></td><td><div class="ed-chips-edit">${DATA.competencies.map(k=>{const on=course.comps.includes(k.id);return`<div class="ed-chip-toggle${on?' on':''}" style="${on?'background:'+k.color+';border-color:'+k.color:''}" data-ci="${ci}" data-kid="${k.id}" onclick="toggleEdComp(this)">${k.id}</div>`}).join('')}</div></td><td><input class="ed-input" value="${esc(course.note)}" onchange="DATA.courses[${ci}].note=this.value;markDirty()"></td><td><button class="ed-btn ed-btn-danger" onclick="DATA.courses.splice(${ci},1);renderEditor();markDirty()" style="padding:3px 8px;font-size:10px">X</button></td></tr>`});
-h+=`</tbody></table><div class="ed-actions"><button class="ed-btn ed-btn-primary" onclick="addCourse()">+ Predmet</button><button class="ed-btn ed-btn-secondary" onclick="applyChanges()">Aplikovat zmeny</button></div></div></div>`;
+
+// Predmety
+h+=`<div class="editor-section"><div class="editor-section-header" onclick="this.nextElementSibling.classList.toggle('collapsed')"><h3>Predmety (${DATA.courses.length})</h3><span style="color:#8892a4;font-size:11px">klikni</span></div><div class="editor-section-body">`;
+
+DATA.courses.forEach((course,ci)=>{
+  const cat=catById(course.cat);
+  const sem=DATA.semesters[course.sem-1];
+  h+=`<div style="border:1px solid #e1e4e8;border-radius:8px;margin-bottom:10px;overflow:hidden">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f6f8fa;cursor:pointer;user-select:none" onclick="this.nextElementSibling.classList.toggle('collapsed')">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="color:${cat?cat.color:'#888'};font-weight:700;font-size:11px">${sem?sem.label:''}</span>
+        <strong style="font-size:13px">${course.name}</strong>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <span style="font-size:10px;color:#8892a4">${course.comps.length} kompetenci</span>
+        <button class="ed-btn ed-btn-danger" onclick="event.stopPropagation();DATA.courses.splice(${ci},1);renderEditor();markDirty()" style="padding:2px 8px;font-size:10px">Smazat</button>
+      </div>
+    </div>
+    <div class="editor-section-body collapsed" style="padding:12px 14px">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:12px">
+        <div><label style="font-size:10px;font-weight:700;color:#8892a4;display:block;margin-bottom:3px">NAZEV</label><input class="ed-input" value="${esc(course.name)}" onchange="DATA.courses[${ci}].name=this.value;markDirty()"></div>
+        <div><label style="font-size:10px;font-weight:700;color:#8892a4;display:block;margin-bottom:3px">SEMESTR</label><select class="ed-select" style="width:100%" onchange="DATA.courses[${ci}].sem=+this.value;markDirty()">${[1,2,3,4,5,6].map(s=>`<option value="${s}"${course.sem===s?' selected':''}>${s}. semestr</option>`).join('')}</select></div>
+        <div><label style="font-size:10px;font-weight:700;color:#8892a4;display:block;margin-bottom:3px">KATEGORIE</label><select class="ed-select" style="width:100%" onchange="DATA.courses[${ci}].cat=this.value;markDirty()">${DATA.categories.map(c=>`<option value="${c.id}"${course.cat===c.id?' selected':''}>${c.label.replace('\n',' ')}</option>`).join('')}</select></div>
+        <div><label style="font-size:10px;font-weight:700;color:#8892a4;display:block;margin-bottom:3px">NAROCNOST</label><select class="ed-select" style="width:100%" onchange="DATA.courses[${ci}].diff=+this.value;markDirty()">${[1,2,3,4,5].map(d=>`<option value="${d}"${course.diff===d?' selected':''}>${d} — ${diffLabels[d]}</option>`).join('')}</select></div>
+      </div>
+      <div style="margin-bottom:12px"><label style="font-size:10px;font-weight:700;color:#8892a4;display:block;margin-bottom:3px">KOMPETENCE</label><div class="ed-chips-edit">${DATA.competencies.map(k=>{const on=course.comps.includes(k.id);return`<div class="ed-chip-toggle${on?' on':''}" style="${on?'background:'+k.color+';border-color:'+k.color:''}" data-ci="${ci}" data-kid="${k.id}" onclick="toggleEdComp(this)">${k.id}: ${k.label}</div>`}).join('')}</div></div>
+      <div style="margin-bottom:12px"><label style="font-size:10px;font-weight:700;color:#8892a4;display:block;margin-bottom:3px">KRATKA POZNAMKA</label><input class="ed-input" value="${esc(course.note)}" onchange="DATA.courses[${ci}].note=this.value;markDirty()"></div>
+      <div style="margin-bottom:12px"><label style="font-size:10px;font-weight:700;color:#8892a4;display:block;margin-bottom:3px">ANOTACE</label><textarea class="ed-input" rows="3" style="resize:vertical" onchange="DATA.courses[${ci}].annotation=this.value;markDirty()">${esc(course.annotation||'')}</textarea></div>
+      <div style="margin-bottom:12px"><label style="font-size:10px;font-weight:700;color:#8892a4;display:block;margin-bottom:3px">VYSTUPY Z UCENI <span style="font-weight:400;color:#b0b8c4">(kazdy na novy radek)</span></label><textarea class="ed-input" rows="4" style="resize:vertical" onchange="DATA.courses[${ci}].outcomes=this.value.split('\\n').filter(x=>x.trim());markDirty()">${esc((course.outcomes||[]).join('\n'))}</textarea></div>
+      <div style="margin-bottom:8px"><label style="font-size:10px;font-weight:700;color:#8892a4;display:block;margin-bottom:3px">KLICOVA TEMATA <span style="font-weight:400;color:#b0b8c4">(kazde na novy radek)</span></label><textarea class="ed-input" rows="4" style="resize:vertical" onchange="DATA.courses[${ci}].topics=this.value.split('\\n').filter(x=>x.trim());markDirty()">${esc((course.topics||[]).join('\n'))}</textarea></div>
+      <div><label style="font-size:10px;font-weight:700;color:#8892a4;display:block;margin-bottom:3px">NAVAZUJE NA (ID predmetu, carkou)</label><input class="ed-input" value="${esc((course.leadsTo||[]).join(', '))}" onchange="DATA.courses[${ci}].leadsTo=this.value.split(',').map(x=>x.trim()).filter(x=>x);markDirty()"></div>
+    </div>
+  </div>`;
+});
+
+h+=`<div class="ed-actions"><button class="ed-btn ed-btn-primary" onclick="addCourse()">+ Pridat predmet</button><button class="ed-btn ed-btn-secondary" onclick="applyChanges()">Aplikovat zmeny do vizualizaci</button></div></div></div>`;
+
+// Kompetence
+h+=`<div class="editor-section"><div class="editor-section-header" onclick="this.nextElementSibling.classList.toggle('collapsed')"><h3>Kompetence (${DATA.competencies.length})</h3><span style="color:#8892a4;font-size:11px">klikni</span></div><div class="editor-section-body collapsed">`;
+DATA.competencies.forEach((k,ki)=>{
+  h+=`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0f0f0">
+    <input type="color" value="${k.color}" onchange="DATA.competencies[${ki}].color=this.value;markDirty()" style="width:30px;height:26px;border:none;cursor:pointer">
+    <input class="ed-input" value="${esc(k.id)}" onchange="DATA.competencies[${ki}].id=this.value;markDirty()" style="width:50px">
+    <input class="ed-input" value="${esc(k.label)}" onchange="DATA.competencies[${ki}].label=this.value;markDirty()" style="flex:1">
+    <select class="ed-select" onchange="DATA.competencies[${ki}].group=this.value;markDirty()"><option value="process"${k.group==='process'?' selected':''}>Designovy proces</option><option value="mgmt"${k.group==='mgmt'?' selected':''}>Rizeni & impl.</option><option value="prof"${k.group==='prof'?' selected':''}>Profesni rozvoj</option></select>
+    <button class="ed-btn ed-btn-danger" onclick="DATA.competencies.splice(${ki},1);DATA.courses.forEach(c=>{c.comps=c.comps.filter(x=>x!=='${k.id}')});renderEditor();markDirty()" style="padding:2px 8px;font-size:10px">X</button>
+  </div>`;
+});
+h+=`<div class="ed-actions"><button class="ed-btn ed-btn-primary" onclick="DATA.competencies.push({id:'K'+(DATA.competencies.length+1),label:'Nova kompetence',color:'#888888',group:'process'});renderEditor();markDirty()">+ Kompetence</button><button class="ed-btn ed-btn-secondary" onclick="applyChanges()">Aplikovat zmeny</button></div></div></div>`;
+
+// Import/Export
 h+=`<div class="editor-section"><div class="editor-section-header" onclick="this.nextElementSibling.classList.toggle('collapsed')"><h3>Import/Export JSON</h3><span style="color:#8892a4;font-size:11px">klikni</span></div><div class="editor-section-body collapsed"><textarea id="ed-json" style="width:100%;height:200px;font-family:monospace;font-size:11px;padding:10px;border:1px solid #d1d5db;border-radius:8px;resize:vertical">${esc(JSON.stringify(DATA,null,2))}</textarea><div class="ed-actions"><button class="ed-btn ed-btn-primary" onclick="importJSON()">Importovat</button><button class="ed-btn ed-btn-secondary" onclick="document.getElementById('ed-json').select();document.execCommand('copy')">Kopirovat</button></div></div></div>`;
+
 wrap.innerHTML=h}
 
 function toggleEdComp(el){const ci=+el.dataset.ci,kid=el.dataset.kid;const c=DATA.courses[ci];const i=c.comps.indexOf(kid);if(i>=0){c.comps.splice(i,1);el.classList.remove('on');el.style.background='';el.style.borderColor=''}else{c.comps.push(kid);const k=kById(kid);el.classList.add('on');el.style.background=k.color;el.style.borderColor=k.color}markDirty()}
